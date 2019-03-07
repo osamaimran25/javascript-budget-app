@@ -1,6 +1,6 @@
 // Budget Controller
 
-var budgetController =function(){
+var budgetController = ( function(){
 
 var Expense= function(id , description, value){
 
@@ -104,14 +104,125 @@ if (index !== -1){
 
 } , 
 
+calculateBudget: function(){
+
+    calculateTotal('exp');
+    calculateTotal('inc');
+
+
+    data.budget = data.totals.inc - data.totals.exp;
+
+    if (data.totals.inc >0){
+
+        data.percentage = Math.round(data.totals.ex / data.totals.inc) * 100 ;
+
+    } else {
+        data.percentage = -1 ;
+
+    }
+
+},
+ calculatePercetages:  function(){
+    /*
+            a=20
+            b=10
+            c=40
+            income = 100
+            a=20/100=20%
+            b=10/100=10%
+            c=40/100=40%
+            */
+
+        data.allItems.exp.forEach(function(cur){
+            cur.calcPercentage(data.totals.inc);
+
+        });
+
+},
+getPercentages : function() {
+        var allPerc = data.allItems.exp.map(function(cur){
+        
+            return cur.getPercentage();
+        });
+        return allPerc;
+
+},
+
+    getBudget: function(){
+        return {
+            budget : data.budget,
+            totalInc: data.totals.inc,
+            totalExp : data.totals.exp,
+            percentage : data.percentage 
+
+        };
+    
+    },
+
+    testing : function(){
+        console.log(data);
+
+    }
+
 
     
+};
+
+}) ();
+
+// UI Controller 
+var  UIController = ( function(){
+
+    var DOMstrings = {
+        inputType: '.add__type',
+        inputDescription: '.add__description',
+        inputValue: '.add__value',
+        inputBtn: '.add__btn',
+        incomeContainer: '.income__list',
+        expensesContainer: '.expenses__list',
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expensesLabel: '.budget__expenses--value',
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container',
+        expensesPercLabel: '.item__percentage',
+        dateLabel: '.budget__title--month'
+    };
+   
+        var formatNumber =  function(num , types) {
+                var numSplit , int, dec, type ;
+
+            /*
+            + or - before number
+            exactly 2 decimal points
+            comma separating the thousands
+
+            2310.4567 -> + 2,310.46
+            2000 -> + 2,000.00
+            */
+            num = Math.abs(num);
+            num = num.toFixed(2);
+
+            numSplit = num.split('.');
+            
+            int = numSplit[0];
+            if(int.length > 3) {
+                int = int.substr(0 , int.length - 3) + ',' + int.substr(int.length - 3, 3);
+            } 
+            dec = numSplit[1];
+            
+            return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec ;
+        }; 
+        
+        var nodeListForEach = function(list , callback){
+            for (var i = 0; i < list.length; i ++) {
+
+                callback(list[i] , i);
+            }
+        };
 
 
-}
 
+    return{}      
 
-
-
-
-}
+    })
