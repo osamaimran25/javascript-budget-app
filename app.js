@@ -432,12 +432,47 @@ document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changeTy
         
     };
 
-    var ctrlDeleteItem =
+    var ctrlDeleteItem = function(event){
+
+        var itemID, splitID, type, ID;
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        if (itemID){
+            splitID = itemID.split('-');
+            type = splitID[0];
+            ID = parseInt(splitID[1]);
+
+            budgetCtrl.deleteItem(type, ID);
+
+            UIController.deleteListItem(itemID);
+
+            updateBudget();
+
+            updatePercentages();
+        }
+    };
 
 
+    return {
+
+        init : function(){
 
 
+            console.log('Application has been started ');
+            UICtrl.displayMonth();
+            UICtrl.displayBudget({
+                budget : 0,
+                totalInc: 0,
+                totalExp: 0,
+                percentage: -1
+            });
+            setupEventListners();
+            
+        }
 
 
+        
+    };
 
 })(budgetController , UIController);
+
+controller.init();
