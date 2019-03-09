@@ -228,7 +228,7 @@ var  UIController = ( function(){
             return {
                 type : document.querySelector(DOMstrings.inputType).value,
                 description : document.querySelector(DOMstrings.inputDescription).value,
-                value : document.querySelector(DOMstrings.inputValue).value
+                value : parseFloat(document.querySelector(DOMstrings.inputValue).value)
             };
         },
 
@@ -238,14 +238,206 @@ var  UIController = ( function(){
 
 
         if (type === 'inc'){
+            element = DOMstrings.incomeContainer;
+         
+            html = '<div class="item clearfix" id="inc-%id%"> <div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
 
-            
+        } else if (type == 'exp'){
+           
+            element = DOMstrings.expensesContainer;
+
+            html =  '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
         }
-       } 
+            newHtml = html.replace('%id%' , obj.id);
+            newHtml = newHtml.replace('%description%' , obj.description);
+            newHtml = newHtml.replace('%value%' , obj.value); 
+
+            document.querySelector(element).insertAdjacentHtml('beforeend' , newHtml)
+
+
+
+        },
+
+        deleteListItem : function(selectorID){
+        var el = document,getElementById(selectorID);
+        
+        el.parentNodde.removeChild(el);
+
+
+        },
+
+        clearFix: function {
+            var fields , fieldsArr ;
+            
+            
+            fields = document.querySelectorAll(DOMstrings.inputDescription + ',' + DOMstrings.inputType);
+
+            fieldsArr = Array.prototype.slice.call(fields);
+
+            fieldsArr.forEach(function(current, index, array){
+                current.value = " ";
+
+
+            });
+            fieldsArr[0].focus();
+
+        },
+
+
+        displayBudget : function(obj) {
+            var type ;
+
+            obj.budget > 0 ? type = 'inc' : tyepe = 'exp' ;
+
+            document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget , type);
+            document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc , 'inc');
+            document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp , 'exp');
+
+
+            if (obj.perc > 0 ) {
+                document.querySelector(DOMstrings.percentageLabel).textContent = obje.percentage;
+            } else {
+                document.querySelector(DOMstrings.percentageLabel).textContent = '---'; 
+            }
+
+
+
+        },
+
+
+        DisplayPerccentages : function(percentage){
+            var fields = document.querySelector(DOMstrings.expensesPercLabel);
+            
+            nodeListForEach(fields , function(current, index){
+
+                if (percentage[index] > 0 ){
+                    current.textContent = percentage[index] + '%';
+    
+                } else {
+                    current.textContent = '---' ;
+                }
+    
+    
+
+            } );
+        },
+
+        displayMonth: function() {
+            var now , months, month , year;
+
+            now = new Data();
+
+            months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            month.getYear();
+
+            year = now.getFullYear();
+            document.querySelector(DOMstrings.dateLabel).textContent = months[month] + ' ' + year; 
+
+        },
+    
+        changeType: function() {
+
+            var fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' + DOMstrings.inputDescription + ' ,' + DOMstrings.inputValue);
+    
+                nodeListForEach(fields, function(curr){
+                    cur.classList.toggle('red-focus');
+                } );
+                document.querySelector(DOMstrings.inputBtn).classList,toggle('red');
+
+        
+            },
+        
+        getDOMstrings : function(){
+
+            return DOMstrings ;
+        }
+    
+    
+    };
+ 
+})();
+
+
+// Global App Controller
+var controller = (function(budgetCtrl , UICtrl){
+    
+    var setupEventListners = function(){
+        var DOM = UICtrl.getDOMstrings();
+
+    document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
+    
+    document.addEventListener('keypress' , function(event){
+
+        if (event.keyCode === 13 || event.which === 13){
+            ctrlAddItem();
+        }
+
+});
+
+document.querySelector(DOM.container).addEventListener('clisk', ctrlDeleteItem);
+
+
+document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changeType );
+
+    };
+    
+    var updateBudget = function(){
+
+        // Calculate the budget
+        budgetCtrl.calculateBudget;
+
+        // Return the budget 
+        var budget = budgetCtrl.getBudget();
+
+
+        // Display the budget
+        UICtrl.displayBudget(budget);
+    };
+
+    var updatePercentages = function(){
+        
+        //Calculate Percntage 
+        budgetCtrl.calculatePercetages();
+
+
+        // Read Percentages From Budget Contoller Module
+        var percentatages = budgetCtrl.getPercentages();
+
+        // Update the Display with new Percentages %
+        UICtrl.displayPerccentages(percentatages);
+
+    };
+
+
+    var ctrlAddItem = function() {
+        var input, newItem;
+        
+        // get input data
+        input = UICtrl.getInput();
+
+        if (input.description !== "" && !isNaN(input.value) && input.value > 0){
+
+            newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+
+            UICtrl.addListItem(newItem, input.type);
+
+            UICtrl.clearFlieds();
+            updateBudget();
+            updatePercentages();
+
+        
+        
+        }
+        
+    };
+
+    var ctrlDeleteItem =
 
 
 
 
-    }      
 
-    })
+
+
+})(budgetController , UIController);
