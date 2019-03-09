@@ -223,6 +223,29 @@ var  UIController = ( function(){
 
 
 
-    return{}      
+    return{
+        getInput: function(){
+            return {
+                type : document.querySelector(DOMstrings.inputType).value,
+                description : document.querySelector(DOMstrings.inputDescription).value,
+                value : document.querySelector(DOMstrings.inputValue).value
+            };
+        },
+
+
+       addListItem : function(obj , type){
+        var html , newHtml , element ;
+
+
+        if (type === 'inc'){
+
+            
+        }
+       } 
+
+
+
+
+    }      
 
     })
